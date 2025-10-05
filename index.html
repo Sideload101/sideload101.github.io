@@ -7,20 +7,26 @@
     html, body {
       margin: 0;
       padding: 0;
+      width: 100%;
+      height: 100%;
       background-color: rgb(16,16,16);
-      min-height: 100%;
+      overflow: auto; /* allow scrolling if SVG is taller than viewport */
     }
 
     body {
       display: flex;
-      flex-direction: column;  /* stack items vertically */
-      align-items: center;     /* center horizontally */
-      padding-top: 20px;       /* top padding */
+      flex-direction: column;
+      align-items: center;   /* center horizontally */
+      justify-content: flex-start;
+      padding: 0;
+      box-sizing: border-box;
     }
 
     img {
-      max-width: 90%;
-      height: auto;
+      width: 100vw;   /* fill viewport width */
+      height: 100vh;  /* fill viewport height */
+      object-fit: contain; /* scale SVG proportionally, no distortion */
+      display: block;
     }
   </style>
 </head>
