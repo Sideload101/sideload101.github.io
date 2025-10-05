@@ -2,19 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Sideload101</title>
+  <title>Tutorial SVG Page</title>
   <style>
-    /* Make the whole page dark gray */
+    /* Full-page dark background */
     html, body {
       margin: 0;
       padding: 0;
+      background-color: rgb(16,16,16);
       height: 100%;
-      background-color: rgb(16,16,16); /* dark gray */
-      display: flex;
+    }
+
+    body {
+      padding-top: 20px; /* top padding */
+      display: block; /* normal flow so scroll works */
+    }
+
+    /* Make SVG responsive */
+    img {
+      display: block;
+      margin: 0 auto; /* horizontally center */
+      max-width: 90%;
+      height: auto;
     }
   </style>
 </head>
 <body>
-  <img src="tutorial.svg" alt="SVG">
+  <img src="tutorial.svg" alt="Tutorial SVG">
 </body>
 </html>
