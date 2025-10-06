@@ -29,50 +29,60 @@
       color: #ccc;
     }
 
-    .sticky-buttons {
-      position: sticky;
-      top: 0;
-      background-color: rgb(18,18,18);
-      z-index: 10;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      padding: 5px 0;
+    /* Mobile layout only */
+    @media (max-width: 800px) {
+      .sticky-buttons {
+        position: sticky;
+        top: 0;
+        background-color: rgb(18,18,18);
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        padding: 5px 0;
+      }
+
+      .toggle-btn {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding: 15px 20px;
+        background-color: rgb(30,30,30);
+        border: none;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 6px;
+        text-align: left;
+      }
+
+      .toggle-btn.active {
+        background-color: rgb(70,70,70);
+      }
+
+      .toggle-btn .arrow {
+        font-size: 18px;
+      }
+
+      .content {
+        display: none;
+        padding: 15px 20px;
+        background-color: rgb(25,25,25);
+        border-radius: 6px;
+        margin-bottom: 10px;
+      }
+
+      .content.active {
+        display: block;
+      }
     }
 
-    .toggle-btn {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      padding: 15px 20px;
-      background-color: rgb(30,30,30);
-      border: none;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 6px;
-      text-align: left;
-    }
-
-    .toggle-btn.active {
-      background-color: rgb(70,70,70);
-    }
-
-    .toggle-btn .arrow {
-      font-weight: bold;
-    }
-
-    .content {
-      display: none;
-      padding: 15px 20px;
-      background-color: rgb(25,25,25);
-      border-radius: 6px;
-      margin-bottom: 10px;
-    }
-
-    .content.active {
-      display: block;
+    /* Desktop fallback (hide mobile buttons) */
+    @media (min-width: 801px) {
+      .sticky-buttons {
+        display: none;
+      }
     }
   </style>
 </head>
@@ -85,26 +95,23 @@
 
   <div class="sticky-buttons">
     <button class="toggle-btn" data-target="trollstore">
-      TrollStore <span class="arrow">&gt;</span>
+      TrollStore <span class="arrow">&#9654;</span>
     </button>
     <div class="content" id="trollstore">
-      <!-- TrollStore content here -->
       <p>Content for TrollStore tutorial.</p>
     </div>
 
     <button class="toggle-btn" data-target="altstore">
-      AltStore/SideStore <span class="arrow">&gt;</span>
+      AltStore/SideStore <span class="arrow">&#9654;</span>
     </button>
     <div class="content" id="altstore">
-      <!-- AltStore content here -->
       <p>Content for AltStore/SideStore tutorial.</p>
     </div>
 
     <button class="toggle-btn" data-target="sideloadly">
-      Sideloadly <span class="arrow">&gt;</span>
+      Sideloadly <span class="arrow">&#9654;</span>
     </button>
     <div class="content" id="sideloadly">
-      <!-- Sideloadly content here -->
       <p>Content for Sideloadly tutorial.</p>
     </div>
   </div>
@@ -116,16 +123,16 @@
       btn.addEventListener('click', () => {
         const targetId = btn.dataset.target;
         const content = document.getElementById(targetId);
-
         const isActive = content.classList.contains('active');
 
-        // Close all contents
+        // Close all
         document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
-        buttons.forEach(b => b.querySelector('.arrow').textContent = '>');
+        buttons.forEach(b => b.querySelector('.arrow').innerHTML = '&#9654;');
 
+        // Open clicked if it was closed
         if(!isActive){
           content.classList.add('active');
-          btn.querySelector('.arrow').textContent = 'v';
+          btn.querySelector('.arrow').innerHTML = '&#9660;'; // down triangle
         }
       });
     });
