@@ -6,47 +6,67 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body {
-  margin:0; padding:0;
+  margin: 0;
+  padding: 0;
   font-family: Helvetica, sans-serif;
   background-color: rgb(18,18,18);
   color: white;
+  overflow-x: hidden;
 }
 
-/* SVG container */
+/* SVG container for desktop */
 #svg {
   width: 100%;
   display: flex;
   justify-content: center;
+  align-items: flex-start;
+  padding-top: 40px; /* top spacing */
+  box-sizing: border-box;
 }
+
 #svg svg {
   width: 100%;
+  max-width: min(150vh, 150%);
   height: auto;
-  max-width: 150%;
   display: block;
 }
 
-/* Mobile layout */
+/* --- MOBILE LAYOUT --- */
 @media (max-width: 800px) {
-  header { padding: 20px; text-align: center; }
-  header h1 { margin:0; font-size:24px; }
-  header p { margin:5px 0 20px; font-size:16px; color:#ccc; }
+  header {
+    padding: 20px;
+    text-align: center;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 24px;
+  }
+  header p {
+    margin: 5px 0 20px;
+    font-size: 16px;
+    color: #ccc;
+  }
 
   .os-toggle {
     display: flex;
     justify-content: center;
+    gap: 10px;
     margin-bottom: 10px;
   }
+
   .os-toggle button {
-    padding:10px 20px;
-    margin:0 5px;
     background-color: rgb(30,30,30);
-    border:none;
-    border-radius:6px;
-    color:white;
-    cursor:pointer;
-    font-size:16px;
+    border: none;
+    color: white;
+    font-size: 15px;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
   }
-  .os-toggle button.active { background-color: rgb(70,70,70); }
+
+  .os-toggle button.active {
+    background-color: rgb(70,70,70);
+  }
 
   .sticky-buttons {
     position: sticky;
@@ -73,26 +93,30 @@ body {
     border-radius: 6px;
     text-align: left;
   }
-  .toggle-btn.active { background-color: rgb(70,70,70); }
 
-  .toggle-btn .arrow { font-size: 18px; }
+  .toggle-btn .arrow {
+    transition: transform 0.3s ease;
+  }
+
+  .toggle-btn.active .arrow {
+    transform: rotate(90deg);
+  }
 
   .content {
     max-height: 0;
     overflow: hidden;
-    padding: 0 20px;
+    transition: max-height 0.6s cubic-bezier(0.25, 1, 0.5, 1); /* ease-out acceleration */
     background-color: rgb(25,25,25);
     border-radius: 6px;
-    margin-bottom: 10px;
-    transition: max-height 0.5s cubic-bezier(0,0,0.2,1);
+    margin: 0 0 10px;
   }
+
   .content.active {
-    max-height: 2000px;
-    padding: 15px 20px;
+    max-height: 1000px;
   }
 }
 
-/* Desktop hides mobile header/buttons */
+/* Hide mobile elements on desktop */
 @media (min-width: 801px) {
   header, .os-toggle, .sticky-buttons { display: none; }
 }
@@ -100,99 +124,98 @@ body {
 </head>
 <body>
 
+<!-- Mobile Header -->
 <header>
   <h1>Sideload101</h1>
   <p>An ultimate sideloading guide</p>
 </header>
 
+<!-- OS Toggle for Mobile -->
 <div class="os-toggle">
-  <button id="mac-btn" class="active">macOS</button>
-  <button id="win-btn">Windows</button>
+  <button id="macBtn" class="active">macOS</button>
+  <button id="winBtn">Windows</button>
 </div>
 
+<!-- Mobile Buttons -->
 <div class="sticky-buttons">
-  <button class="toggle-btn" data-target="trollstore">TrollStore <span class="arrow">&#9654;</span></button>
+  <button class="toggle-btn" data-target="trollstore">
+    TrollStore <span class="arrow">&#9654;</span>
+  </button>
   <div class="content" id="trollstore"></div>
 
-  <button class="toggle-btn" data-target="altstore">AltStore/SideStore <span class="arrow">&#9654;</span></button>
+  <button class="toggle-btn" data-target="altstore">
+    AltStore/SideStore <span class="arrow">&#9654;</span>
+  </button>
   <div class="content" id="altstore"></div>
 
-  <button class="toggle-btn" data-target="sideloadly">Sideloadly <span class="arrow">&#9654;</span></button>
+  <button class="toggle-btn" data-target="sideloadly">
+    Sideloadly <span class="arrow">&#9654;</span>
+  </button>
   <div class="content" id="sideloadly"></div>
 </div>
 
+<!-- SVG container -->
 <div id="svg"></div>
 
 <script>
-const svgContainer = document.getElementById('svg');
 const isMobile = window.innerWidth <= 800;
+const svgContainer = document.getElementById("svg");
+const macBtn = document.getElementById("macBtn");
+const winBtn = document.getElementById("winBtn");
+let currentOS = "macos";
 
-// Load mobile SVG
-function loadMobileSVG(os='macos', targetId='trollstore', index=1){
-  const content = document.getElementById(targetId);
-  fetch(`${os}-mobile-${index}.svg`).then(r=>r.text()).then(svg=>content.innerHTML=svg);
+if(macBtn && winBtn){
+  macBtn.addEventListener("click", () => {
+    currentOS = "macos";
+    macBtn.classList.add("active");
+    winBtn.classList.remove("active");
+  });
+  winBtn.addEventListener("click", () => {
+    currentOS = "windows";
+    winBtn.classList.add("active");
+    macBtn.classList.remove("active");
+  });
 }
 
-// Mobile default load
-if(isMobile){
-  loadMobileSVG('macos','trollstore',1);
-}
-
-// Desktop: detect OS
-if(!isMobile){
-  let desktopSVG = 'macos.svg';
-  const platform = navigator.platform.toLowerCase();
-  if(platform.includes('win')) desktopSVG = 'windows.svg';
-  if(platform.includes('mac')) desktopSVG = 'macos.svg';
-
-  fetch(desktopSVG).then(r=>r.text()).then(svg=>svgContainer.innerHTML=svg);
-}
-
-// Mobile buttons toggle
-const buttons = document.querySelectorAll('.toggle-btn');
-buttons.forEach((btn,i)=>{
-  btn.addEventListener('click', ()=>{
+const buttons = document.querySelectorAll(".toggle-btn");
+buttons.forEach(btn => {
+  btn.addEventListener("click", () => {
     const targetId = btn.dataset.target;
     const content = document.getElementById(targetId);
-    const isActive = content.classList.contains('active');
+    const isActive = content.classList.contains("active");
 
-    document.querySelectorAll('.content').forEach(c=>{
-      c.classList.remove('active'); c.style.maxHeight=null;
-    });
-    buttons.forEach(b=>b.querySelector('.arrow').innerHTML='&#9654;');
+    document.querySelectorAll(".content").forEach(c => c.classList.remove("active"));
+    buttons.forEach(b => b.classList.remove("active"));
 
     if(!isActive){
-      content.classList.add('active');
-      content.style.maxHeight=content.scrollHeight + "px";
-      btn.querySelector('.arrow').innerHTML='&#9660;';
-      if(content.innerHTML.trim()===''){
-        const index = i+1;
-        loadMobileSVG('macos', targetId, index);
-      }
+      btn.classList.add("active");
+      content.classList.add("active");
+
+      let mobileSvg = currentOS === "macos" ? "macos-mobile-1.svg" : "windows-mobile-1.svg";
+      if(targetId === "altstore") mobileSvg = currentOS === "macos" ? "macos-mobile-2.svg" : "windows-mobile-2.svg";
+      if(targetId === "sideloadly") mobileSvg = currentOS === "macos" ? "macos-mobile-3.svg" : "windows-mobile-3.svg";
+
+      fetch(mobileSvg)
+        .then(r => r.text())
+        .then(svg => content.innerHTML = svg);
     }
   });
 });
 
-// Mobile OS buttons
-const macBtn = document.getElementById('mac-btn');
-const winBtn = document.getElementById('win-btn');
+if(isMobile){
+  fetch("macos-mobile-1.svg")
+    .then(r => r.text())
+    .then(svg => document.getElementById("trollstore").innerHTML = svg);
+}else{
+  const platform = navigator.platform.toLowerCase();
+  let svgFile = "macos.svg";
+  if(platform.includes("mac")) svgFile = "macos.svg";
+  if(platform.includes("win")) svgFile = "windows.svg";
 
-macBtn.addEventListener('click', ()=>{
-  macBtn.classList.add('active'); winBtn.classList.remove('active');
-  document.querySelectorAll('.content').forEach((c,i)=>{
-    if(c.classList.contains('active')){
-      loadMobileSVG('macos', c.id, i+1);
-    }
-  });
-});
-winBtn.addEventListener('click', ()=>{
-  winBtn.classList.add('active'); macBtn.classList.remove('active');
-  document.querySelectorAll('.content').forEach((c,i)=>{
-    if(c.classList.contains('active')){
-      loadMobileSVG('windows', c.id, i+1);
-    }
-  });
-});
+  fetch(svgFile)
+    .then(r => r.text())
+    .then(svg => svgContainer.innerHTML = svg);
+}
 </script>
 </body>
 </html>
