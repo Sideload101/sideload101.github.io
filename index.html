@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Sideload101</title>
-  <script>
-    const platform = navigator.platform.toLowerCase();
-    if(platform.includes('mac')){
-      window.location.href = './macos';
-    } else if(platform.includes('win')){
-      window.location.href = './windows';
-    } else {
-      window.location.href = './macos'; // default
-    }
-  </script>
+<meta charset="utf-8" />
+<title>Sideload101</title>
+<script>
+  // Redirect users to platform-specific folder (desktop UA-based).
+  const ua = navigator.userAgent.toLowerCase();
+  let target = '/macos/';
+  if (ua.includes('windows')) {
+    target = '/windows/';
+  } else if (ua.includes('macintosh') || ua.includes('mac os') || ua.includes('mac os x')) {
+    target = '/macos/';
+  } else {
+    // default to macOS
+    target = '/macos/';
+  }
+  // Use replace so back button doesn't loop here
+  window.location.replace(target);
+</script>
 </head>
-<body>
-  <p style="color:white; text-align:center; margin-top:50px;">
-    Redirecting...
-  </p>
+<body style="background:#121212;color:#fff;font-family:Helvetica, sans-serif">
+  Redirecting...
 </body>
 </html>
