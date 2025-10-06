@@ -8,7 +8,7 @@
 :root { --bg: #121212; }
 html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family: Helvetica, sans-serif; color:#fff; }
 #svg { width:100%; display:flex; justify-content:center; padding-top:40px; overflow:hidden; }
-#svg svg { width:100%; height:auto; display:block; max-width:min(120vh,120%); }
+#svg svg { width:100%; height:auto; display:block; max-width:min(150vh,150%); }
 
 @media (max-width:800px) {
   .sticky-buttons {
@@ -30,7 +30,6 @@ html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family
     border:0;
     cursor:pointer;
     color:#fff;
-    margin-bottom:0; /* no gap below button itself */
   }
 
   .toggle-btn + .toggle-btn {
@@ -48,9 +47,11 @@ html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family
   .content {
     display:none;
     background:#191919;
-    margin-bottom:8px; /* spacing below the content */
   }
+
   .content svg { width:100%; height:auto; display:block; }
+
+  .spacer { height:8px; } /* spacing after each content */
 }
 
 @media (min-width:801px) { .sticky-buttons { display:none; } }
@@ -61,15 +62,19 @@ html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family
 <div class="sticky-buttons">
   <button class="toggle-btn trollstore" data-target="trollstore">TrollStore <span class="arrow">&#9654;</span></button>
   <div class="content" id="trollstore"></div>
+  <div class="spacer"></div>
 
   <button class="toggle-btn altstore" data-target="altstore">AltStore <span class="arrow">&#9654;</span></button>
   <div class="content" id="altstore"></div>
+  <div class="spacer"></div>
 
   <button class="toggle-btn sidestore" data-target="sidestore">Sidestore <span class="arrow">&#9654;</span></button>
   <div class="content" id="sidestore"></div>
+  <div class="spacer"></div>
 
   <button class="toggle-btn sideloadly" data-target="sideloadly">Sideloadly <span class="arrow">&#9654;</span></button>
   <div class="content" id="sideloadly"></div>
+  <div class="spacer"></div>
 </div>
 
 <div id="svg"></div>
@@ -81,9 +86,9 @@ html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family
 
   async function fetchSVG(url, container){
     try {
-      const res = await fetch(url);
-      if(!res.ok) throw Error('Not found');
-      container.innerHTML = await res.text();
+      const r = await fetch(url);
+      if(!r.ok) throw Error('Not found');
+      container.innerHTML = await r.text();
     } catch(e){
       container.innerHTML = '<p style="color:#bbb;margin:0">Content unavailable: '+url+'</p>';
       console.warn('Failed to fetch', url, e);
@@ -93,8 +98,8 @@ html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family
   // Desktop SVG
   if(!isMobile){
     const ua = navigator.userAgent.toLowerCase();
-    let file = 'windows.svg';
-    if(ua.includes('macintosh')||ua.includes('mac os')||ua.includes('mac os x')) file = 'macos.svg';
+    let file = 'macos.svg';
+    if(ua.includes('windows')) file = 'windows.svg';
     await fetchSVG(file, svgContainer);
   }
 
@@ -111,7 +116,7 @@ html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family
       toggles.forEach(t=>t.querySelector('.arrow').innerHTML='&#9654;');
 
       if(!isVisible){
-        await fetchSVG(`windows-mobile-${idx+1}.svg`, content);
+        await fetchSVG(`macos-mobile-${idx+1}.svg`, content);
         content.style.display = 'block';
         btn.querySelector('.arrow').innerHTML='&#9660;';
       } else {

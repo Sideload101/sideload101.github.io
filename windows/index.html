@@ -8,7 +8,7 @@
 :root { --bg: #121212; }
 html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family: Helvetica, sans-serif; color:#fff; }
 #svg { width:100%; display:flex; justify-content:center; padding-top:40px; overflow:hidden; }
-#svg svg { width:100%; height:auto; display:block; max-width:min(120vh,120%); }
+#svg svg { width:100%; height:auto; display:block; max-width:min(150vh,150%); }
 
 @media (max-width:800px) {
   .sticky-buttons {
@@ -33,7 +33,7 @@ html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family
   }
 
   .toggle-btn + .toggle-btn {
-    border-top: 1px solid rgba(255,255,255,0.1); /* subtle separator */
+    border-top: 1px solid rgba(255,255,255,0.1);
   }
 
   .toggle-btn .arrow { transition: transform 0.1s ease; }
@@ -47,10 +47,11 @@ html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family
   .content {
     display:none;
     background:#191919;
-    margin-bottom:8px; /* spacing after SVG */
   }
 
   .content svg { width:100%; height:auto; display:block; }
+
+  .spacer { height:8px; } /* spacing after each content */
 }
 
 @media (min-width:801px) { .sticky-buttons { display:none; } }
@@ -61,15 +62,19 @@ html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family
 <div class="sticky-buttons">
   <button class="toggle-btn trollstore" data-target="trollstore">TrollStore <span class="arrow">&#9654;</span></button>
   <div class="content" id="trollstore"></div>
+  <div class="spacer"></div>
 
   <button class="toggle-btn altstore" data-target="altstore">AltStore <span class="arrow">&#9654;</span></button>
   <div class="content" id="altstore"></div>
+  <div class="spacer"></div>
 
   <button class="toggle-btn sidestore" data-target="sidestore">Sidestore <span class="arrow">&#9654;</span></button>
   <div class="content" id="sidestore"></div>
+  <div class="spacer"></div>
 
   <button class="toggle-btn sideloadly" data-target="sideloadly">Sideloadly <span class="arrow">&#9654;</span></button>
   <div class="content" id="sideloadly"></div>
+  <div class="spacer"></div>
 </div>
 
 <div id="svg"></div>
