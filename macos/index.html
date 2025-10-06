@@ -8,7 +8,7 @@
 :root { --bg: rgb(18,18,18); --panel: rgb(30,30,30); --panel2: rgb(25,25,25); }
 html, body { height:100%; margin:0; padding:0; background:var(--bg); color:#fff; font-family: Helvetica, sans-serif; }
 #svg { width:100%; display:flex; justify-content:center; align-items:flex-start; padding-top:40px; box-sizing:border-box; overflow:hidden; }
-#svg svg { width:100%; height:auto; display:block; max-width:min(120vh,120%); }
+#svg svg { width:100%; height:auto; display:block; max-width:min(150vh,150%); }
 
 @media (max-width:800px) {
   .sticky-buttons { position: sticky; top:0; z-index:20; display:flex; flex-direction:column; background:var(--bg); }
@@ -16,14 +16,11 @@ html, body { height:100%; margin:0; padding:0; background:var(--bg); color:#fff;
   .toggle-btn .arrow { font-size:18px; transition: transform .1s ease; }
 
   .content {
-    max-height:0;
+    height:0;
     overflow:hidden;
-    transition: max-height 0.6s cubic-bezier(0.05,0.7,0.2,1);
     background:var(--panel2);
-    padding:0;
     box-sizing:border-box;
   }
-  .content.active { max-height:10000px; padding:0; }
 
   .content svg { width:100%; height:auto; display:block; margin:0; }
 }
@@ -50,7 +47,7 @@ html, body { height:100%; margin:0; padding:0; background:var(--bg); color:#fff;
 <div id="svg"></div>
 
 <script>
-(function(){
+(async function(){
 const svgContainer = document.getElementById('svg');
 const isMobile = window.innerWidth <= 800;
 
@@ -59,32 +56,68 @@ async function fetchToContainer(url, container) {
   catch(e){ container.innerHTML='<p style="color:#bbb;margin:0">Content unavailable: '+url+'</p>'; console.warn('Failed to fetch',url,e);}
 }
 
-const toggles = document.querySelectorAll('.toggle-btn');
-toggles.forEach((btn, idx)=>{
-  btn.addEventListener('click', async ()=>{
-    const targetId = btn.dataset.target;
-    const content = document.getElementById(targetId);
-    const isActive = content.classList.contains('active');
-
-    document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));
-    toggles.forEach(t=>{ t.classList.remove('active'); t.querySelector('.arrow').innerHTML='&#9654;'; });
-
-    if(!isActive){
-      btn.classList.add('active');
-      content.classList.add('active');
-      btn.querySelector('.arrow').innerHTML='&#9660;';
-      const index = idx+1;
-      await fetchToContainer(`macos-mobile-${index}.svg`, content);
-    }
-  });
-});
-
+// Desktop: detect OS
 if(!isMobile){
   const ua=navigator.userAgent.toLowerCase();
   let svgFile='macos.svg';
   if(ua.includes('windows')) svgFile='windows.svg';
-  else if(ua.includes('macintosh')||ua.includes('mac os')||ua.includes('mac os x')) svgFile='macos.svg';
   fetchToContainer(svgFile, svgContainer);
+}
+
+// Mobile toggle buttons with smooth height animation
+const toggles = document.querySelectorAll('.toggle-btn');
+toggles.forEach((btn, idx)=>{
+  const targetId = btn.dataset.target;
+  const content = document.getElementById(targetId);
+
+  btn.addEventListener('click', async ()=>{
+    const isActive = content.classList.contains('active');
+
+    // Collapse all
+    document.querySelectorAll('.content').forEach(c=>{
+      if(c!==content && c.classList.contains('active')){
+        collapse(c);
+      }
+    });
+    toggles.forEach(t=>{ if(t!==btn) t.querySelector('.arrow').innerHTML='&#9654;'; });
+
+    if(!isActive){
+      btn.querySelector('.arrow').innerHTML='&#9660;';
+      await fetchToContainer(`macos-mobile-${idx+1}.svg`, content);
+      expand(content);
+    } else {
+      collapse(content);
+      btn.querySelector('.arrow').innerHTML='&#9654;';
+    }
+  });
+});
+
+function expand(el){
+  el.classList.add('active');
+  const height = el.scrollHeight;
+  el.style.height = '0';
+  requestAnimationFrame(()=>{
+    el.style.transition = 'height 0.6s cubic-bezier(0.05,0.7,0.2,1)';
+    el.style.height = height + 'px';
+  });
+  el.addEventListener('transitionend', ()=>{
+    el.style.height='';
+    el.style.transition='';
+  }, {once:true});
+}
+
+function collapse(el){
+  const height = el.scrollHeight;
+  el.style.height = height + 'px';
+  requestAnimationFrame(()=>{
+    el.style.transition = 'height 0.6s cubic-bezier(0.05,0.7,0.2,1)';
+    el.style.height = '0';
+  });
+  el.addEventListener('transitionend', ()=>{
+    el.classList.remove('active');
+    el.style.height='';
+    el.style.transition='';
+  }, {once:true});
 }
 })();
 </script>
