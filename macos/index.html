@@ -8,7 +8,7 @@
 :root { --bg: rgb(18,18,18); --panel: rgb(30,30,30); --panel2: rgb(25,25,25); --muted: #ccc; }
 html, body { height:100%; margin:0; padding:0; background:var(--bg); color:#fff; font-family: Helvetica, sans-serif; }
 #svg { width:100%; display:flex; justify-content:center; align-items:flex-start; padding-top:40px; box-sizing:border-box; overflow:hidden; }
-#svg svg { width:100%; height:auto; display:block; max-width: min(120vh, 120%); }
+#svg svg { width:100%; height:auto; display:block; max-width:min(150vh,150%); }
 
 @media (max-width:800px) {
   header { padding:20px; text-align:center; }
@@ -23,11 +23,25 @@ html, body { height:100%; margin:0; padding:0; background:var(--bg); color:#fff;
   .toggle-btn { display:flex; align-items:center; justify-content:space-between; width:100%; padding:14px 16px; background:var(--panel); border-radius:8px; border:0; color:#fff; font-size:16px; cursor:pointer; }
   .toggle-btn .arrow { font-size:18px; transition: transform .18s ease; }
 
-  .content { max-height:0; overflow:hidden; transition: max-height .55s cubic-bezier(0.05,0.7,0.2,1); background:var(--panel2); border-radius:8px; margin:8px 0 12px; padding:0 16px; box-sizing:border-box; }
-  .content.active { max-height:1400px; padding:16px; }
+  .content {
+    max-height:0;
+    overflow:hidden;
+    transition: max-height .55s cubic-bezier(0.05,0.7,0.2,1), padding .55s cubic-bezier(0.05,0.7,0.2,1);
+    background:var(--panel2);
+    border-radius:8px;
+    margin:8px 0 12px;
+    padding:0 16px;
+    box-sizing:border-box;
+  }
+  .content.active {
+    max-height:1400px;
+    padding:16px;
+  }
 
-  /* Make mobile SVGs full width */
-  .content svg { width: 100%; height: auto; display: block; }
+  .content svg { width:100%; height:auto; display:block; }
+
+  .notice { font-size:13px; color:#ccc; margin:6px 0; display:flex; justify-content:space-between; align-items:center; }
+  .notice button { background:rgb(60,60,60); border:none; border-radius:6px; color:#fff; padding:4px 8px; cursor:pointer; font-size:13px; }
 }
 
 @media (min-width:801px) { header, .os-toggle, .sticky-buttons { display:none; } }
@@ -52,8 +66,8 @@ html, body { height:100%; margin:0; padding:0; background:var(--bg); color:#fff;
   <button class="toggle-btn" data-target="altstore">AltStore/SideStore <span class="arrow">&#9654;</span></button>
   <div class="content" id="altstore"></div>
 
-  <button class="toggle-btn" data-target="sideloadly">Sideloadly <span class="arrow">&#9654;</span></button>
-  <div class="content" id="sideloadly"></div>
+  <button class="toggle-btn" data-target="sidestore">Sidestore <span class="arrow">&#9654;</span></button>
+  <div class="content" id="sidestore"></div>
 </div>
 
 <div id="svg"></div>
@@ -102,30 +116,36 @@ toggles.forEach((btn, idx)=>{
       const index = idx+1;
       await fetchToContainer(`${currentOS}-mobile-${index}.svg`, content);
 
-      // AltStore special small button
+      // AltStore notice button
       if(targetId==='altstore'){
-        const note=document.createElement('div');
-        note.textContent='If you’ve already done AltStore setup, click below to go to Sidestore.';
-        note.style.fontSize='13px'; note.style.color='#ccc'; note.style.margin='6px 0';
-        content.prepend(note);
+        const notice = document.createElement('div');
+        notice.className='notice';
+        notice.innerHTML=`<span>If you’ve already done AltStore setup, click below to go to Sidestore.</span>`;
+        const goBtn=document.createElement('button'); goBtn.textContent='Go';
+        notice.appendChild(goBtn);
+        content.prepend(notice);
 
-        const smallBtn=document.createElement('button');
-        smallBtn.textContent='Go to Sidestore';
-        Object.assign(smallBtn.style,{
-          display:'block',margin:'10px auto 0',padding:'6px 10px',fontSize:'14px',
-          borderRadius:'6px',border:'none',cursor:'pointer',background:'rgb(60,60,60)',color:'#fff'
-        });
-        content.appendChild(smallBtn);
+        goBtn.addEventListener('click', ()=>{
+          content.scrollTo({top:content.scrollHeight, behavior:'smooth'});
+          // the final Sidestore button should appear at bottom
+          const sidestoreBtn = document.createElement('button');
+          sidestoreBtn.textContent='Proceed to Sidestore';
+          Object.assign(sidestoreBtn.style,{
+            display:'block',margin:'10px auto',padding:'6px 10px',fontSize:'14px',
+            borderRadius:'6px',border:'none',cursor:'pointer',background:'rgb(60,60,60)',color:'#fff'
+          });
+          content.appendChild(sidestoreBtn);
 
-        smallBtn.addEventListener('click', async ()=>{
-          const sidestoreContent=document.getElementById('sideloadly');
-          if(!sidestoreContent.classList.contains('active')){
-            sidestoreContent.classList.add('active'); sidestoreContent.setAttribute('aria-hidden','false');
-            document.querySelector('[data-target="sideloadly"]').classList.add('active');
-            document.querySelector('[data-target="sideloadly"] .arrow').innerHTML='&#9660;';
-            await fetchToContainer(`${currentOS}-mobile-4.svg`,sidestoreContent);
-          }
-          sidestoreContent.scrollIntoView({behavior:'smooth', block:'start'});
+          sidestoreBtn.addEventListener('click', async ()=>{
+            const sidestoreContent=document.getElementById('sidestore');
+            if(!sidestoreContent.classList.contains('active')){
+              sidestoreContent.classList.add('active'); sidestoreContent.setAttribute('aria-hidden','false');
+              document.querySelector('[data-target="sidestore"]').classList.add('active');
+              document.querySelector('[data-target="sidestore"] .arrow').innerHTML='&#9660;';
+              await fetchToContainer(`${currentOS}-mobile-4.svg`,sidestoreContent);
+            }
+            sidestoreContent.scrollIntoView({behavior:'smooth', block:'start'});
+          });
         });
       }
     }
@@ -133,7 +153,7 @@ toggles.forEach((btn, idx)=>{
 });
 
 if(isMobile){
-  // no default open
+  // mobile: no default open
 }else{
   const ua=navigator.userAgent.toLowerCase();
   let svgFile='macos.svg';
