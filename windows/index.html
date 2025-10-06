@@ -6,29 +6,67 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body {
-  margin:0; padding:0;
+  margin: 0;
+  padding: 0;
   font-family: Helvetica, sans-serif;
   background-color: rgb(18,18,18);
   color: white;
+  overflow-x: hidden;
 }
 
-/* SVG container (desktop + mobile) */
+/* SVG container for desktop */
 #svg {
   width: 100%;
   display: flex;
   justify-content: center;
+  align-items: flex-start;
+  padding-top: 40px; /* top padding */
+  box-sizing: border-box;
 }
+
 #svg svg {
   width: 100%;
+  max-width: min(150vh, 150%); /* prevent excessive zoom, relative to screen */
   height: auto;
   display: block;
 }
 
-/* Mobile layout */
+/* --- MOBILE LAYOUT --- */
 @media (max-width: 800px) {
-  header { padding: 20px; text-align: center; }
-  header h1 { margin:0; font-size:24px; }
-  header p { margin:5px 0 20px; font-size:16px; color:#ccc; }
+  header {
+    padding: 20px;
+    text-align: center;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 24px;
+  }
+  header p {
+    margin: 5px 0 20px;
+    font-size: 16px;
+    color: #ccc;
+  }
+
+  .os-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .os-toggle button {
+    background-color: rgb(30,30,30);
+    border: none;
+    color: white;
+    font-size: 15px;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .os-toggle button.active {
+    background-color: rgb(70,70,70);
+  }
 
   .sticky-buttons {
     position: sticky;
@@ -56,23 +94,31 @@ body {
     text-align: left;
   }
 
-  .toggle-btn.active { background-color: rgb(70,70,70); }
+  .toggle-btn .arrow {
+    transition: transform 0.3s ease;
+  }
 
-  .toggle-btn .arrow { font-size: 18px; }
+  .toggle-btn.active .arrow {
+    transform: rotate(90deg);
+  }
 
   .content {
-    display: none;
-    padding: 15px 20px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.6s cubic-bezier(0.25, 1, 0.5, 1);
     background-color: rgb(25,25,25);
     border-radius: 6px;
-    margin-bottom: 10px;
+    margin: 0 0 10px;
   }
-  .content.active { display: block; }
+
+  .content.active {
+    max-height: 1000px;
+  }
 }
 
-/* Desktop hides mobile header/buttons */
+/* Hide mobile elements on desktop */
 @media (min-width: 801px) {
-  header, .sticky-buttons { display: none; }
+  header, .os-toggle, .sticky-buttons { display: none; }
 }
 </style>
 </head>
@@ -84,15 +130,27 @@ body {
   <p>An ultimate sideloading guide</p>
 </header>
 
+<!-- OS Toggle for Mobile -->
+<div class="os-toggle">
+  <button id="macBtn" class="active">macOS</button>
+  <button id="winBtn">Windows</button>
+</div>
+
 <!-- Mobile Buttons -->
 <div class="sticky-buttons">
-  <button class="toggle-btn" data-target="trollstore">TrollStore <span class="arrow">&#9654;</span></button>
+  <button class="toggle-btn" data-target="trollstore">
+    TrollStore <span class="arrow">&#9654;</span>
+  </button>
   <div class="content" id="trollstore"></div>
 
-  <button class="toggle-btn" data-target="altstore">AltStore/SideStore <span class="arrow">&#9654;</span></button>
+  <button class="toggle-btn" data-target="altstore">
+    AltStore/SideStore <span class="arrow">&#9654;</span>
+  </button>
   <div class="content" id="altstore"></div>
 
-  <button class="toggle-btn" data-target="sideloadly">Sideloadly <span class="arrow">&#9654;</span></button>
+  <button class="toggle-btn" data-target="sideloadly">
+    Sideloadly <span class="arrow">&#9654;</span>
+  </button>
   <div class="content" id="sideloadly"></div>
 </div>
 
@@ -100,36 +158,63 @@ body {
 <div id="svg"></div>
 
 <script>
-const buttons = document.querySelectorAll('.toggle-btn');
+const isMobile = window.innerWidth <= 800;
+const svgContainer = document.getElementById("svg");
+const macBtn = document.getElementById("macBtn");
+const winBtn = document.getElementById("winBtn");
+let currentOS = "macos";
+
+if(macBtn && winBtn){
+  macBtn.addEventListener("click", () => {
+    currentOS = "macos";
+    macBtn.classList.add("active");
+    winBtn.classList.remove("active");
+  });
+  winBtn.addEventListener("click", () => {
+    currentOS = "windows";
+    winBtn.classList.add("active");
+    macBtn.classList.remove("active");
+  });
+}
+
+const buttons = document.querySelectorAll(".toggle-btn");
 buttons.forEach(btn => {
-  btn.addEventListener('click', () => {
+  btn.addEventListener("click", () => {
     const targetId = btn.dataset.target;
     const content = document.getElementById(targetId);
-    const isActive = content.classList.contains('active');
+    const isActive = content.classList.contains("active");
 
-    // Close all
-    document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
-    buttons.forEach(b => b.querySelector('.arrow').innerHTML = '&#9654;');
+    document.querySelectorAll(".content").forEach(c => c.classList.remove("active"));
+    buttons.forEach(b => b.classList.remove("active"));
 
-    // Open clicked
     if(!isActive){
-      content.classList.add('active');
-      btn.querySelector('.arrow').innerHTML = '&#9660;';
-      // Load mobile SVG
-      fetch(`macos-mobile-${btn.dataset.target === 'trollstore' ? 1 : btn.dataset.target === 'altstore' ? 2 : 3}.svg`)
+      btn.classList.add("active");
+      content.classList.add("active");
+
+      let mobileSvg = currentOS === "macos" ? "macos-mobile-1.svg" : "windows-mobile-1.svg";
+      if(targetId === "altstore") mobileSvg = currentOS === "macos" ? "macos-mobile-2.svg" : "windows-mobile-2.svg";
+      if(targetId === "sideloadly") mobileSvg = currentOS === "macos" ? "macos-mobile-3.svg" : "windows-mobile-3.svg";
+
+      fetch(mobileSvg)
         .then(r => r.text())
         .then(svg => content.innerHTML = svg);
     }
   });
 });
 
-// Load desktop or mobile SVG
-const svgContainer = document.getElementById('svg');
-if(window.innerWidth > 800){
-  fetch('macos.svg').then(r=>r.text()).then(svg=>svgContainer.innerHTML=svg);
-} else {
-  // Optionally load first mobile SVG in TrollStore
-  fetch('macos-mobile-1.svg').then(r=>r.text()).then(svg=>document.getElementById('trollstore').innerHTML=svg);
+if(isMobile){
+  fetch("macos-mobile-1.svg")
+    .then(r => r.text())
+    .then(svg => document.getElementById("trollstore").innerHTML = svg);
+}else{
+  const platform = navigator.platform.toLowerCase();
+  let svgFile = "windows.svg";
+  if(platform.includes("mac")) svgFile = "macos.svg";
+  if(platform.includes("win")) svgFile = "windows.svg";
+
+  fetch(svgFile)
+    .then(r => r.text())
+    .then(svg => svgContainer.innerHTML = svg);
 }
 </script>
 </body>
