@@ -31,6 +31,12 @@
   </style>
 </head>
 <body>
-  <img src="tutorial.html" alt="Tutorial SVG">
+  <div id="svg"></div>
+
+<script>
+fetch("tutorial.svg")
+  .then(r => r.text())
+  .then(svg => document.getElementById("svg").innerHTML = svg);
+</script>
 </body>
 </html>
