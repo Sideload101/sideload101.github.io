@@ -3,43 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <title>Sideload101</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      background-color: rgb(18,18,18);
-      width: 100%;
-      min-height: 100%;
+  <script>
+    const platform = navigator.platform.toLowerCase();
+    if(platform.includes('mac')){
+      window.location.href = './macos';
+    } else if(platform.includes('win')){
+      window.location.href = './windows';
+    } else {
+      window.location.href = './macos'; // default
     }
-
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      box-sizing: border-box;
-      padding: 40px 0; /* space top and bottom */
-    }
-
-    #svg {
-      width: 100%;
-      max-width: 100%;
-      display: flex;
-      justify-content: center;
-    }
-
-    #svg svg {
-      height: auto;
-      display: block;
-    }
-  </style>
+  </script>
 </head>
 <body>
-  <div id="svg"></div>
-
-  <script>
-    fetch("tutorial.svg")
-      .then(r => r.text())
-      .then(svg => document.getElementById("svg").innerHTML = svg);
-  </script>
+  <p style="color:white; text-align:center; margin-top:50px;">
+    Redirecting...
+  </p>
 </body>
 </html>
