@@ -14,7 +14,7 @@ html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family
   .sticky-buttons { position: sticky; top:0; display:flex; flex-direction:column; background:var(--bg); z-index:20; }
   .toggle-btn { display:flex; justify-content:space-between; width:100%; padding:12px 16px; font-size:16px; background:var(--panel); border:0; color:#fff; cursor:pointer; }
   .toggle-btn .arrow { transition: transform 0.1s ease; }
-  .content { height:0; overflow:hidden; background:var(--panel2); }
+  .content { display:none; background:var(--panel2); }
   .content svg { width:100%; height:auto; display:block; }
 }
 @media (min-width:801px) { .sticky-buttons { display:none; } }
@@ -62,61 +62,28 @@ html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family
     await fetchSVG(file, svgContainer);
   }
 
-  // Mobile buttons
+  // Mobile buttons: instant toggle
   const toggles = document.querySelectorAll('.toggle-btn');
-
   toggles.forEach((btn, idx)=>{
     btn.addEventListener('click', async ()=>{
       const targetId = btn.dataset.target;
       const content = document.getElementById(targetId);
-      const isActive = content.classList.contains('active');
+      const isVisible = content.style.display === 'block';
 
-      // Collapse others
-      document.querySelectorAll('.content').forEach(c=>{
-        if(c!==content && c.classList.contains('active')) collapse(c);
-      });
-      toggles.forEach(t=>{
-        if(t!==btn) t.querySelector('.arrow').innerHTML='&#9654;';
-      });
+      // Hide all other contents
+      document.querySelectorAll('.content').forEach(c=>c.style.display='none');
+      toggles.forEach(t=>t.querySelector('.arrow').innerHTML='&#9654;');
 
-      if(!isActive){
-        btn.querySelector('.arrow').innerHTML='&#9660;';
+      if(!isVisible){
         await fetchSVG(`windows-mobile-${idx+1}.svg`, content);
-        setTimeout(()=>expand(content), 50);
+        content.style.display = 'block';
+        btn.querySelector('.arrow').innerHTML = '&#9660;';
       } else {
-        collapse(content);
-        btn.querySelector('.arrow').innerHTML='&#9654;';
+        content.style.display = 'none';
+        btn.querySelector('.arrow').innerHTML = '&#9654;';
       }
     });
   });
-
-  function expand(el){
-    el.classList.add('active');
-    const h = el.scrollHeight;
-    el.style.height = '0';
-    requestAnimationFrame(()=>{
-      el.style.transition = 'height 0.6s cubic-bezier(0.05,0.7,0.2,1)';
-      el.style.height = h + 'px';
-    });
-    el.addEventListener('transitionend', ()=>{
-      el.style.height='';
-      el.style.transition='';
-    }, {once:true});
-  }
-
-  function collapse(el){
-    const h = el.scrollHeight;
-    el.style.height = h + 'px';
-    requestAnimationFrame(()=>{
-      el.style.transition = 'height 0.6s cubic-bezier(0.05,0.7,0.2,1)';
-      el.style.height = '0';
-    });
-    el.addEventListener('transitionend', ()=>{
-      el.classList.remove('active');
-      el.style.height='';
-      el.style.transition='';
-    }, {once:true});
-  }
 })();
 </script>
 </body>
