@@ -1,141 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Sideload101</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      margin:0;
-      padding:0;
-      font-family: Helvetica, sans-serif;
-      background-color: rgb(18,18,18);
-      color: white;
-    }
+<meta charset="UTF-8">
+<title>Sideload101</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+  margin:0; padding:0;
+  font-family: Helvetica, sans-serif;
+  background-color: rgb(18,18,18);
+  color: white;
+}
 
-    header {
-      padding: 20px;
-      text-align: center;
-    }
+/* SVG container (desktop + mobile) */
+#svg {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+#svg svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
 
-    header h1 {
-      margin: 0;
-      font-size: 24px;
-    }
+/* Mobile layout */
+@media (max-width: 800px) {
+  header { padding: 20px; text-align: center; }
+  header h1 { margin:0; font-size:24px; }
+  header p { margin:5px 0 20px; font-size:16px; color:#ccc; }
 
-    header p {
-      margin: 5px 0 20px;
-      font-size: 16px;
-      color: #ccc;
-    }
+  .sticky-buttons {
+    position: sticky;
+    top: 0;
+    background-color: rgb(18,18,18);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 5px 0;
+  }
 
-    /* Mobile layout only */
-    @media (max-width: 800px) {
-      .sticky-buttons {
-        position: sticky;
-        top: 0;
-        background-color: rgb(18,18,18);
-        z-index: 10;
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-        padding: 5px 0;
-      }
+  .toggle-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 15px 20px;
+    background-color: rgb(30,30,30);
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 6px;
+    text-align: left;
+  }
 
-      .toggle-btn {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        padding: 15px 20px;
-        background-color: rgb(30,30,30);
-        border: none;
-        color: white;
-        font-size: 16px;
-        cursor: pointer;
-        border-radius: 6px;
-        text-align: left;
-      }
+  .toggle-btn.active { background-color: rgb(70,70,70); }
 
-      .toggle-btn.active {
-        background-color: rgb(70,70,70);
-      }
+  .toggle-btn .arrow { font-size: 18px; }
 
-      .toggle-btn .arrow {
-        font-size: 18px;
-      }
+  .content {
+    display: none;
+    padding: 15px 20px;
+    background-color: rgb(25,25,25);
+    border-radius: 6px;
+    margin-bottom: 10px;
+  }
+  .content.active { display: block; }
+}
 
-      .content {
-        display: none;
-        padding: 15px 20px;
-        background-color: rgb(25,25,25);
-        border-radius: 6px;
-        margin-bottom: 10px;
-      }
-
-      .content.active {
-        display: block;
-      }
-    }
-
-    /* Desktop fallback (hide mobile buttons) */
-    @media (min-width: 801px) {
-      .sticky-buttons {
-        display: none;
-      }
-    }
-  </style>
+/* Desktop hides mobile header/buttons */
+@media (min-width: 801px) {
+  header, .sticky-buttons { display: none; }
+}
+</style>
 </head>
 <body>
 
-  <header>
-    <h1>Sideload101</h1>
-    <p>An ultimate sideloading guide</p>
-  </header>
+<!-- Mobile Header -->
+<header>
+  <h1>Sideload101</h1>
+  <p>An ultimate sideloading guide</p>
+</header>
 
-  <div class="sticky-buttons">
-    <button class="toggle-btn" data-target="trollstore">
-      TrollStore <span class="arrow">&#9654;</span>
-    </button>
-    <div class="content" id="trollstore">
-      <p>Content for TrollStore tutorial.</p>
-    </div>
+<!-- Mobile Buttons -->
+<div class="sticky-buttons">
+  <button class="toggle-btn" data-target="trollstore">TrollStore <span class="arrow">&#9654;</span></button>
+  <div class="content" id="trollstore"></div>
 
-    <button class="toggle-btn" data-target="altstore">
-      AltStore/SideStore <span class="arrow">&#9654;</span>
-    </button>
-    <div class="content" id="altstore">
-      <p>Content for AltStore/SideStore tutorial.</p>
-    </div>
+  <button class="toggle-btn" data-target="altstore">AltStore/SideStore <span class="arrow">&#9654;</span></button>
+  <div class="content" id="altstore"></div>
 
-    <button class="toggle-btn" data-target="sideloadly">
-      Sideloadly <span class="arrow">&#9654;</span>
-    </button>
-    <div class="content" id="sideloadly">
-      <p>Content for Sideloadly tutorial.</p>
-    </div>
-  </div>
+  <button class="toggle-btn" data-target="sideloadly">Sideloadly <span class="arrow">&#9654;</span></button>
+  <div class="content" id="sideloadly"></div>
+</div>
 
-  <script>
-    const buttons = document.querySelectorAll('.toggle-btn');
+<!-- SVG container -->
+<div id="svg"></div>
 
-    buttons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const targetId = btn.dataset.target;
-        const content = document.getElementById(targetId);
-        const isActive = content.classList.contains('active');
+<script>
+const buttons = document.querySelectorAll('.toggle-btn');
+buttons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const targetId = btn.dataset.target;
+    const content = document.getElementById(targetId);
+    const isActive = content.classList.contains('active');
 
-        // Close all
-        document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
-        buttons.forEach(b => b.querySelector('.arrow').innerHTML = '&#9654;');
+    // Close all
+    document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+    buttons.forEach(b => b.querySelector('.arrow').innerHTML = '&#9654;');
 
-        // Open clicked if it was closed
-        if(!isActive){
-          content.classList.add('active');
-          btn.querySelector('.arrow').innerHTML = '&#9660;'; // down triangle
-        }
-      });
-    });
-  </script>
+    // Open clicked
+    if(!isActive){
+      content.classList.add('active');
+      btn.querySelector('.arrow').innerHTML = '&#9660;';
+      // Load mobile SVG
+      fetch(`macos-mobile-${btn.dataset.target === 'trollstore' ? 1 : btn.dataset.target === 'altstore' ? 2 : 3}.svg`)
+        .then(r => r.text())
+        .then(svg => content.innerHTML = svg);
+    }
+  });
+});
+
+// Load desktop or mobile SVG
+const svgContainer = document.getElementById('svg');
+if(window.innerWidth > 800){
+  fetch('macos.svg').then(r=>r.text()).then(svg=>svgContainer.innerHTML=svg);
+} else {
+  // Optionally load first mobile SVG in TrollStore
+  fetch('macos-mobile-1.svg').then(r=>r.text()).then(svg=>document.getElementById('trollstore').innerHTML=svg);
+}
+</script>
 </body>
 </html>
