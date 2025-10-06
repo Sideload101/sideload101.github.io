@@ -99,7 +99,6 @@ html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family
   if(!isMobile){
     const ua = navigator.userAgent.toLowerCase();
     let file = 'windows.svg';
-    if(ua.includes('macintosh')||ua.includes('mac os')||ua.includes('mac os x')) file = 'macos.svg';
     await fetchSVG(file, svgContainer);
   }
 
