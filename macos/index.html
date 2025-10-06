@@ -95,14 +95,6 @@ html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family
     }
   }
 
-  // Desktop SVG
-  if(!isMobile){
-    const ua = navigator.userAgent.toLowerCase();
-    let file = 'macos.svg';
-    if(ua.includes('windows')) file = 'windows.svg';
-    await fetchSVG(file, svgContainer);
-  }
-
   // Mobile toggles
   const toggles = document.querySelectorAll('.toggle-btn');
   toggles.forEach((btn, idx)=>{
