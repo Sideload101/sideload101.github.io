@@ -5,13 +5,21 @@
 <title>Sideload101</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-:root { --bg: rgb(18,18,18); }
+:root { --bg: #121212; }
 html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family: Helvetica, sans-serif; color:#fff; }
 #svg { width:100%; display:flex; justify-content:center; padding-top:40px; overflow:hidden; }
-#svg svg { width:100%; height:auto; display:block; max-width:min(120vh,120%); }
+#svg svg { width:100%; height:auto; display:block; max-width:min(150vh,150%); }
 
 @media (max-width:800px) {
-  .sticky-buttons { position: sticky; top:0; display:flex; flex-direction:column; background:var(--bg); z-index:20; }
+  .sticky-buttons {
+    position: sticky;
+    top:0;
+    display:flex;
+    flex-direction:column;
+    background:var(--bg);
+    z-index:20;
+  }
+
   .toggle-btn {
     display:flex;
     justify-content:space-between;
@@ -23,16 +31,25 @@ html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family
     cursor:pointer;
     color:#fff;
   }
-  .toggle-btn .arrow { transition: transform 0.1s ease; }
-  .toggle-btn + .toggle-btn { border-top: 1px solid #444; } /* thin separator line */
 
-  /* Custom button colors */
+  .toggle-btn + .toggle-btn {
+    border-top: 1px solid rgba(255,255,255,0.1); /* subtle separator */
+  }
+
+  .toggle-btn .arrow { transition: transform 0.1s ease; }
+
+  /* Dark-mode solid colors */
   .trollstore { background: #004080; }
-  .altstore { background: #006666; }
-  .sidestore { background: #660099; }
+  .altstore   { background: #006666; }
+  .sidestore  { background: #660099; }
   .sideloadly { background: #006633; }
 
-  .content { display:none; background:rgb(25,25,25); }
+  .content {
+    display:none;
+    background:#191919;
+    margin-bottom:8px; /* spacing after SVG */
+  }
+
   .content svg { width:100%; height:auto; display:block; }
 }
 
@@ -64,9 +81,9 @@ html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family
 
   async function fetchSVG(url, container){
     try {
-      const r = await fetch(url);
-      if(!r.ok) throw Error('Not found');
-      container.innerHTML = await r.text();
+      const res = await fetch(url);
+      if(!res.ok) throw Error('Not found');
+      container.innerHTML = await res.text();
     } catch(e){
       container.innerHTML = '<p style="color:#bbb;margin:0">Content unavailable: '+url+'</p>';
       console.warn('Failed to fetch', url, e);
@@ -81,7 +98,7 @@ html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family
     await fetchSVG(file, svgContainer);
   }
 
-  // Mobile buttons
+  // Mobile toggles
   const toggles = document.querySelectorAll('.toggle-btn');
   toggles.forEach((btn, idx)=>{
     btn.addEventListener('click', async ()=>{
@@ -96,7 +113,7 @@ html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family
       if(!isVisible){
         await fetchSVG(`windows-mobile-${idx+1}.svg`, content);
         content.style.display = 'block';
-        btn.querySelector('.arrow').innerHTML = '&#9660;';
+        btn.querySelector('.arrow').innerHTML='&#9660;';
       } else {
         content.style.display = 'none';
         btn.querySelector('.arrow').innerHTML='&#9654;';
