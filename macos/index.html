@@ -5,34 +5,53 @@
 <title>Sideload101</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-:root { --bg: rgb(18,18,18); --panel: rgb(30,30,30); --panel2: rgb(25,25,25); }
+:root { --bg: rgb(18,18,18); }
 html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family: Helvetica, sans-serif; color:#fff; }
 #svg { width:100%; display:flex; justify-content:center; padding-top:40px; overflow:hidden; }
 #svg svg { width:100%; height:auto; display:block; max-width:min(150vh,150%); }
 
 @media (max-width:800px) {
   .sticky-buttons { position: sticky; top:0; display:flex; flex-direction:column; background:var(--bg); z-index:20; }
-  .toggle-btn { display:flex; justify-content:space-between; width:100%; padding:12px 16px; font-size:16px; background:var(--panel); border:0; color:#fff; cursor:pointer; }
+  .toggle-btn {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    width:100%;
+    padding:20px 16px;
+    font-size:18px;
+    border:0;
+    cursor:pointer;
+    color:#fff;
+  }
   .toggle-btn .arrow { transition: transform 0.1s ease; }
-  .content { display:none; background:var(--panel2); }
+  .toggle-btn + .toggle-btn { border-top: 1px solid #444; } /* separator */
+
+  /* Button colors */
+  .trollstore { background: #003366; }
+  .altstore { background: #006666; }
+  .sidestore { background: #492395; }
+  .sideloadly { background: linear-gradient(to right, #006633, #003366); }
+
+  .content { display:none; background:rgb(25,25,25); }
   .content svg { width:100%; height:auto; display:block; }
 }
+
 @media (min-width:801px) { .sticky-buttons { display:none; } }
 </style>
 </head>
 <body>
 
 <div class="sticky-buttons">
-  <button class="toggle-btn" data-target="trollstore">TrollStore <span class="arrow">&#9654;</span></button>
+  <button class="toggle-btn trollstore" data-target="trollstore">TrollStore <span class="arrow">&#9654;</span></button>
   <div class="content" id="trollstore"></div>
 
-  <button class="toggle-btn" data-target="altstore">AltStore <span class="arrow">&#9654;</span></button>
+  <button class="toggle-btn altstore" data-target="altstore">AltStore <span class="arrow">&#9654;</span></button>
   <div class="content" id="altstore"></div>
 
-  <button class="toggle-btn" data-target="sidestore">Sidestore <span class="arrow">&#9654;</span></button>
+  <button class="toggle-btn sidestore" data-target="sidestore">Sidestore <span class="arrow">&#9654;</span></button>
   <div class="content" id="sidestore"></div>
 
-  <button class="toggle-btn" data-target="sideloadly">Sideloadly <span class="arrow">&#9654;</span></button>
+  <button class="toggle-btn sideloadly" data-target="sideloadly">Sideloadly <span class="arrow">&#9654;</span></button>
   <div class="content" id="sideloadly"></div>
 </div>
 
@@ -70,7 +89,7 @@ html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family
       const content = document.getElementById(targetId);
       const isVisible = content.style.display === 'block';
 
-      // Hide all other contents
+      // Hide others
       document.querySelectorAll('.content').forEach(c=>c.style.display='none');
       toggles.forEach(t=>t.querySelector('.arrow').innerHTML='&#9654;');
 
@@ -80,7 +99,7 @@ html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family
         btn.querySelector('.arrow').innerHTML = '&#9660;';
       } else {
         content.style.display = 'none';
-        btn.querySelector('.arrow').innerHTML = '&#9654;';
+        btn.querySelector('.arrow').innerHTML='&#9654;';
       }
     });
   });
