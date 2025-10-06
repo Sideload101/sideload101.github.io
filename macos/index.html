@@ -1,216 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
+<meta charset="utf-8">
 <title>Sideload101</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  :root { --bg: rgb(18,18,18); --panel: rgb(30,30,30); --panel2: rgb(25,25,25); --muted: #ccc; }
-  html,body { height:100%; margin:0; padding:0; background:var(--bg); color:#fff; font-family: Helvetica, sans-serif; }
-  /* SVG container (desktop + mobile) */
-  #svg { width:100%; display:flex; justify-content:center; align-items:flex-start; padding-top:40px; box-sizing:border-box; overflow:hidden; }
-  #svg svg { width:100%; height:auto; display:block; /* limit excessive scaling */ max-width: min(120vh, 120%); }
+:root { --bg: rgb(18,18,18); --panel: rgb(30,30,30); --panel2: rgb(25,25,25); --muted: #ccc; }
+html, body { height:100%; margin:0; padding:0; background:var(--bg); color:#fff; font-family: Helvetica, sans-serif; }
+#svg { width:100%; display:flex; justify-content:center; align-items:flex-start; padding-top:40px; box-sizing:border-box; overflow:hidden; }
+#svg svg { width:100%; height:auto; display:block; max-width: min(120vh, 120%); }
 
-  /* MOBILE layout (<=800px) */
-  @media (max-width:800px) {
-    header { padding:20px; text-align:center; }
-    header h1 { margin:0; font-size:24px; }
-    header p { margin:5px 0 20px; font-size:16px; color:var(--muted); }
+@media (max-width:800px) {
+  header { padding:20px; text-align:center; }
+  header h1 { margin:0; font-size:24px; }
+  header p { margin:5px 0 20px; font-size:16px; color:var(--muted); }
 
-    .os-toggle { display:flex; justify-content:center; gap:10px; margin-bottom:10px; }
-    .os-toggle button { background:var(--panel); border:0; color:#fff; padding:10px 16px; border-radius:6px; cursor:pointer; font-size:15px; }
-    .os-toggle button.active { background: rgb(70,70,70); }
+  .os-toggle { display:flex; justify-content:center; gap:10px; margin-bottom:10px; }
+  .os-toggle button { background:var(--panel); border:0; color:#fff; padding:10px 16px; border-radius:6px; cursor:pointer; font-size:15px; }
+  .os-toggle button.active { background: rgb(70,70,70); }
 
-    .sticky-buttons {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      padding:6px 12px;
-      background:var(--bg);
-    }
+  .sticky-buttons { position: sticky; top:0; z-index:20; display:flex; flex-direction:column; gap:8px; padding:6px 12px; background:var(--bg); }
+  .toggle-btn { display:flex; align-items:center; justify-content:space-between; width:100%; padding:14px 16px; background:var(--panel); border-radius:8px; border:0; color:#fff; font-size:16px; cursor:pointer; }
+  .toggle-btn .arrow { font-size:18px; transition: transform .18s ease; }
 
-    .toggle-btn {
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      width:100%;
-      padding:14px 16px;
-      background:var(--panel);
-      border-radius:8px;
-      border:0;
-      color:#fff;
-      font-size:16px;
-      cursor:pointer;
-    }
+  .content { max-height:0; overflow:hidden; transition: max-height .55s cubic-bezier(0.05,0.7,0.2,1); background:var(--panel2); border-radius:8px; margin:8px 0 12px; padding:0 16px; box-sizing:border-box; }
+  .content.active { max-height:1400px; padding:16px; }
 
-    .toggle-btn .arrow { font-size:18px; transition: transform .18s ease; }
+  /* Make mobile SVGs full width */
+  .content svg { width: 100%; height: auto; display: block; }
+}
 
-    .content {
-      max-height:0;
-      overflow:hidden;
-      transition: max-height .55s cubic-bezier(0.05, 0.7, 0.2, 1); /* ease-out-ish, accelerates */
-      background:var(--panel2);
-      border-radius:8px;
-      margin:8px 0 12px;
-      padding:0 16px;
-      box-sizing:border-box;
-    }
-    .content.active { max-height:1400px; padding:16px; } /* large enough to show SVG */
-  }
-
-  /* Hide mobile interface on desktop */
-  @media (min-width:801px) {
-    header, .os-toggle, .sticky-buttons { display:none; }
-  }
-
-  /* small helpers */
-  .muted { color:var(--muted); font-size:14px; }
+@media (min-width:801px) { header, .os-toggle, .sticky-buttons { display:none; } }
+.muted { color:var(--muted); font-size:14px; }
 </style>
 </head>
 <body>
-  <!-- Mobile header + OS toggle (only visible on small screens) -->
-  <header>
-    <h1>Sideload101</h1>
-    <p class="muted">An ultimate sideloading guide</p>
-  </header>
+<header>
+  <h1>Sideload101</h1>
+  <p class="muted">An ultimate sideloading guide</p>
+</header>
 
-  <div class="os-toggle" aria-hidden="false">
-    <button id="macBtn" class="active" type="button">macOS</button>
-    <button id="winBtn" type="button">Windows</button>
-  </div>
+<div class="os-toggle">
+  <button id="macBtn" class="active">macOS</button>
+  <button id="winBtn">Windows</button>
+</div>
 
-  <!-- mobile sticky buttons -->
-  <div class="sticky-buttons" aria-hidden="false">
-    <button class="toggle-btn" data-target="trollstore" type="button">TrollStore <span class="arrow">&#9654;</span></button>
-    <div class="content" id="trollstore" role="region" aria-hidden="true"></div>
+<div class="sticky-buttons">
+  <button class="toggle-btn" data-target="trollstore">TrollStore <span class="arrow">&#9654;</span></button>
+  <div class="content" id="trollstore"></div>
 
-    <button class="toggle-btn" data-target="altstore" type="button">AltStore/SideStore <span class="arrow">&#9654;</span></button>
-    <div class="content" id="altstore" role="region" aria-hidden="true"></div>
+  <button class="toggle-btn" data-target="altstore">AltStore/SideStore <span class="arrow">&#9654;</span></button>
+  <div class="content" id="altstore"></div>
 
-    <button class="toggle-btn" data-target="sideloadly" type="button">Sideloadly <span class="arrow">&#9654;</span></button>
-    <div class="content" id="sideloadly" role="region" aria-hidden="true"></div>
-  </div>
+  <button class="toggle-btn" data-target="sideloadly">Sideloadly <span class="arrow">&#9654;</span></button>
+  <div class="content" id="sideloadly"></div>
+</div>
 
-  <!-- SVG container (desktop view) -->
-  <div id="svg" aria-hidden="false"></div>
+<div id="svg"></div>
 
 <script>
 (function(){
-  const svgContainer = document.getElementById('svg');
-  const isMobile = window.innerWidth <= 800;
+const svgContainer = document.getElementById('svg');
+const isMobile = window.innerWidth <= 800;
 
-  // Helper: fetch and insert with graceful fallback
-  async function fetchToContainer(url, container) {
-    try {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Not found');
-      const text = await res.text();
-      container.innerHTML = text;
-    } catch (e) {
-      // fallback: show friendly placeholder
-      container.innerHTML = '<p style="color:#bbb;margin:12px 0">Content unavailable: ' + url + '</p>';
-      console.warn('Failed to fetch', url, e);
-    }
-  }
+async function fetchToContainer(url, container) {
+  try { const res = await fetch(url); if(!res.ok) throw Error('Not found'); container.innerHTML = await res.text(); }
+  catch(e){ container.innerHTML='<p style="color:#bbb;margin:12px 0">Content unavailable: '+url+'</p>'; console.warn('Failed to fetch',url,e);}
+}
 
-  // Mobile behavior: default to macOS; allow user to toggle to Windows
-  const macBtn = document.getElementById('macBtn');
-  const winBtn = document.getElementById('winBtn');
-  let currentOS = 'macos'; // mobile default
+const macBtn = document.getElementById('macBtn');
+const winBtn = document.getElementById('winBtn');
+let currentOS = 'macos';
 
-  if (macBtn && winBtn) {
-    macBtn.addEventListener('click', () => {
-      currentOS = 'macos';
-      macBtn.classList.add('active');
-      winBtn.classList.remove('active');
-      // reload currently open contents (if any)
-      document.querySelectorAll('.content').forEach((c, i) => {
-        if (c.classList.contains('active')) {
-          const idx = i + 1; // 1-based index for section
-          fetchToContainer(`${currentOS}-mobile-${idx}.svg`, c);
-        }
-      });
-    });
-    winBtn.addEventListener('click', () => {
-      currentOS = 'windows';
-      winBtn.classList.add('active');
-      macBtn.classList.remove('active');
-      document.querySelectorAll('.content').forEach((c, i) => {
-        if (c.classList.contains('active')) {
-          const idx = i + 1;
-          fetchToContainer(`${currentOS}-mobile-${idx}.svg`, c);
-        }
-      });
-    });
-  }
+if(macBtn && winBtn){
+  macBtn.addEventListener('click',()=>{ currentOS='macos'; macBtn.classList.add('active'); winBtn.classList.remove('active'); reloadOpenSections(); });
+  winBtn.addEventListener('click',()=>{ currentOS='windows'; winBtn.classList.add('active'); macBtn.classList.remove('active'); reloadOpenSections(); });
+}
 
-  // Mobile: create click handlers for 3 toggle buttons
-  const toggles = document.querySelectorAll('.toggle-btn');
-  toggles.forEach((btn, idx) => {
-    btn.addEventListener('click', async () => {
-      const targetId = btn.dataset.target;
-      const content = document.getElementById(targetId);
-      const isActive = content.classList.contains('active');
+function reloadOpenSections(){
+  document.querySelectorAll('.content').forEach((c,i)=>{
+    if(c.classList.contains('active')) fetchToContainer(`${currentOS}-mobile-${i+1}.svg`,c);
+  });
+}
 
-      // close all
-      document.querySelectorAll('.content').forEach(c => {
-        c.classList.remove('active');
-        c.setAttribute('aria-hidden', 'true');
-      });
-      toggles.forEach(t => {
-        t.classList.remove('active');
-        const arrow = t.querySelector('.arrow');
-        if (arrow) arrow.innerHTML = '&#9654;';
-      });
+const toggles = document.querySelectorAll('.toggle-btn');
+toggles.forEach((btn, idx)=>{
+  btn.addEventListener('click', async ()=>{
+    const targetId = btn.dataset.target;
+    const content = document.getElementById(targetId);
+    const isActive = content.classList.contains('active');
 
-      if (!isActive) {
-        // open clicked
-        btn.classList.add('active');
-        content.classList.add('active');
-        content.setAttribute('aria-hidden', 'false');
-        const arrow = btn.querySelector('.arrow');
-        if (arrow) arrow.innerHTML = '&#9660;';
+    document.querySelectorAll('.content').forEach(c=>{ c.classList.remove('active'); c.setAttribute('aria-hidden','true'); });
+    toggles.forEach(t=>{ t.classList.remove('active'); t.querySelector('.arrow').innerHTML='&#9654;'; });
 
-        // load corresponding mobile svg (index = idx+1)
-        const index = idx + 1; // 1..3
-        await fetchToContainer(`${currentOS}-mobile-${index}.svg`, content);
+    if(!isActive){
+      btn.classList.add('active');
+      content.classList.add('active');
+      content.setAttribute('aria-hidden','false');
+      btn.querySelector('.arrow').innerHTML='&#9660;';
+
+      const index = idx+1;
+      await fetchToContainer(`${currentOS}-mobile-${index}.svg`, content);
+
+      // AltStore special small button
+      if(targetId==='altstore'){
+        const note=document.createElement('div');
+        note.textContent='If you’ve already done AltStore setup, click below to go to Sidestore.';
+        note.style.fontSize='13px'; note.style.color='#ccc'; note.style.margin='6px 0';
+        content.prepend(note);
+
+        const smallBtn=document.createElement('button');
+        smallBtn.textContent='Go to Sidestore';
+        Object.assign(smallBtn.style,{
+          display:'block',margin:'10px auto 0',padding:'6px 10px',fontSize:'14px',
+          borderRadius:'6px',border:'none',cursor:'pointer',background:'rgb(60,60,60)',color:'#fff'
+        });
+        content.appendChild(smallBtn);
+
+        smallBtn.addEventListener('click', async ()=>{
+          const sidestoreContent=document.getElementById('sideloadly');
+          if(!sidestoreContent.classList.contains('active')){
+            sidestoreContent.classList.add('active'); sidestoreContent.setAttribute('aria-hidden','false');
+            document.querySelector('[data-target="sideloadly"]').classList.add('active');
+            document.querySelector('[data-target="sideloadly"] .arrow').innerHTML='&#9660;';
+            await fetchToContainer(`${currentOS}-mobile-4.svg`,sidestoreContent);
+          }
+          sidestoreContent.scrollIntoView({behavior:'smooth', block:'start'});
+        });
       }
-    });
-  });
-
-  // Default loading:
-  if (isMobile) {
-    // mobile default: open first section (TrollStore) with macOS assets
-    const firstContent = document.getElementById('trollstore');
-    if (firstContent) {
-      firstContent.classList.add('active');
-      document.querySelector('.toggle-btn')?.classList.add('active');
-      const arrow = document.querySelector('.toggle-btn .arrow');
-      if (arrow) arrow.innerHTML = '&#9660;';
-      fetchToContainer('macos-mobile-1.svg', firstContent);
     }
-  } else {
-    // Desktop: detect OS via userAgent (more reliable than navigator.platform)
-    const ua = navigator.userAgent.toLowerCase();
-    let svgFile = 'macos.svg'; // default
-    if (ua.includes('windows')) {
-      svgFile = 'windows.svg';
-    } else if (ua.includes('macintosh') || ua.includes('mac os') || ua.includes('mac os x')) {
-      svgFile = 'macos.svg';
-    } else {
-      svgFile = 'macos.svg';
-    }
-    fetchToContainer(svgFile, svgContainer);
-  }
-
-  // Optional: adjust behavior on window resize (if user rotates)
-  window.addEventListener('resize', () => {
-    // this page is simple — if layout changes between mobile/desktop after resize,
-    // a full reload keeps things consistent. We don't auto-reflow complex state here.
   });
+});
+
+if(isMobile){
+  // no default open
+}else{
+  const ua=navigator.userAgent.toLowerCase();
+  let svgFile='macos.svg';
+  if(ua.includes('windows')) svgFile='windows.svg';
+  else if(ua.includes('macintosh')||ua.includes('mac os')||ua.includes('mac os x')) svgFile='macos.svg';
+  fetchToContainer(svgFile, svgContainer);
+}
 })();
 </script>
 </body>
