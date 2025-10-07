@@ -11,6 +11,24 @@ html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family
 #svg svg { width:100%; height:auto; display:block; max-width:min(150vh,150%); }
 
 @media (max-width:800px) {
+  .mobile-header {
+    text-align:center;
+    padding:24px 16px 8px;
+    background:var(--bg);
+    z-index:30;
+  }
+
+  .mobile-header h1 {
+    font-size:22px;
+    margin:0;
+  }
+
+  .mobile-header p {
+    color:#aaa;
+    font-size:15px;
+    margin:6px 0 16px;
+  }
+
   .sticky-buttons {
     position: sticky;
     top:0;
@@ -39,10 +57,10 @@ html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family
   .toggle-btn .arrow { transition: transform 0.1s ease; }
 
   /* Dark-mode solid colors */
-  .trollstore { background: #004080; }
   .altstore   { background: #006666; }
   .sidestore  { background: #660099; }
   .sideloadly { background: #006633; }
+  .trollstore { background: #004080; }
 
   .content {
     display:none;
@@ -54,16 +72,17 @@ html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family
   .spacer { height:8px; } /* spacing after each content */
 }
 
-@media (min-width:801px) { .sticky-buttons { display:none; } }
+@media (min-width:801px) { .mobile-header, .sticky-buttons { display:none; } }
 </style>
 </head>
 <body>
 
-<div class="sticky-buttons">
-  <button class="toggle-btn trollstore" data-target="trollstore">TrollStore <span class="arrow">&#9654;</span></button>
-  <div class="content" id="trollstore"></div>
-  <div class="spacer"></div>
+<div class="mobile-header">
+  <h1>Sideload101</h1>
+  <p>Select one of the tutorials below to begin</p>
+</div>
 
+<div class="sticky-buttons">
   <button class="toggle-btn altstore" data-target="altstore">AltStore <span class="arrow">&#9654;</span></button>
   <div class="content" id="altstore"></div>
   <div class="spacer"></div>
@@ -74,6 +93,10 @@ html, body { margin:0; padding:0; height:100%; background:var(--bg); font-family
 
   <button class="toggle-btn sideloadly" data-target="sideloadly">Sideloadly <span class="arrow">&#9654;</span></button>
   <div class="content" id="sideloadly"></div>
+  <div class="spacer"></div>
+
+  <button class="toggle-btn trollstore" data-target="trollstore">TrollStore <span class="arrow">&#9654;</span></button>
+  <div class="content" id="trollstore"></div>
   <div class="spacer"></div>
 </div>
 
